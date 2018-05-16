@@ -1,0 +1,58 @@
+% https://tex.stackexchange.com/questions/295059/three-tables-side-by-side-on-one-page
+
+\documentclass{wx672article}
+
+\usepackage{wx672cjk}
+
+
+\title{线性代数专业名词索引}
+\author{蒲启元 \\
+ \emph{pqy7172@gmail.com}}
+
+
+
+\begin{document}
+
+\maketitle{}
+
+\begin{center}
+  \section*{K}
+\end{center}
+\label{sec:j}
+
+
+ \begin{table}[h!] %[h!]: no bottom
+      \centering
+        \begin{tabular}[t]{c|c} %[t]: head alignment
+          \hline
+          专业名词 &  页码   \\
+          \hline
+          克拉默法则 & P20下 \\
+          \hline
+        \end{tabular}
+        \hfill
+        \begin{tabular}[t]{c|c}
+          \hline
+          专业名词  &  页码  \\
+          \hline
+          局部有界性 & P26上 \\
+          \hline
+        \end{tabular}
+        \hfill
+        \begin{tabular}[t]{c|c}
+          \hline
+          专业名词 &  页码 \\
+          \hline
+          局部保号性 & P26上 \\
+          \hline
+        \end{tabular}
+      \caption{J开头专业名词}\label{tabJ}
+    \end{table}
+
+\end{document}
+
+
+%%% Local Variables:
+%%% mode: latex
+%%% TeX-master: t
+%%% End:
