@@ -1,8 +1,17 @@
 % https://tex.stackexchange.com/questions/295059/three-tables-side-by-side-on-one-page
+% https://tex.stackexchange.com/questions/297564/why-is-my-table-before-the-section-title
+% 1
+% https://tex.stackexchange.com/questions/8546/section-heading-centering-problem
+% 1
+% https://stackoverflow.com/questions/5612092/is-there-a-way-to-comment-out-a-large-chunk-of-code
+% 1
 
 \documentclass{wx672article}
 
 \usepackage{wx672cjk}
+\usepackage{float}
+\usepackage{titlesec}
+\titleformat{\section}[block]{\Large\bfseries\filcenter}{}{1em}{}
 
 
 \title{概率统计专业名词索引}
@@ -17,146 +26,200 @@
 
 
 
-\begin{center}
-  \section*{C}
-\end{center}
+\section{A}
+\label{sec:a}
+\begin{table}[!ht] %[h!]: no bottom
+  \centering
+  \begin{tabular}[t]{c|c} %[t]: head alignment
+    \hline
+    专业名词 &  页码   \\
+    \hline
+             &  \\
+    \hline
+  \end{tabular}
+  \hfill
+  \begin{tabular}[t]{c|c}
+    \hline
+    专业名词  &  页码  \\
+    \hline
+              &  \\
+    \hline
+  \end{tabular}
+  \hfill
+  \begin{tabular}[t]{c|c}
+    \hline
+    专业名词 &  页码 \\
+    \hline
+             &  \\
+    \hline
+  \end{tabular}
+  \caption{某字母开头专业名词}\label{tabA}
+\end{table}
+
+
+
+\section{B}
+\label{sec:b}
+\begin{table}[!ht] %[!ht]: no bottom
+  \centering
+  \begin{tabular}[t]{c|c} %[t]: head alignment
+    \hline
+    专业名词 &  页码   \\
+    \hline
+    贝叶斯公式 &  P5下\\
+    \hline
+  \end{tabular}
+  \hfill
+  \begin{tabular}[t]{c|c}
+    \hline
+    专业名词  &  页码  \\
+    \hline
+              &  \\
+    \hline
+  \end{tabular}
+  \hfill
+  \begin{tabular}[t]{c|c}
+    \hline
+    专业名词 &  页码 \\
+    \hline
+             &  \\
+    \hline
+  \end{tabular}
+  \caption{B开头专业名词}\label{tabB}
+\end{table}
+
+
+
+\section{C}
 \label{sec:c}
+\begin{table}[!ht] %[!ht]: no bottom
+  \centering
+  \begin{tabular}[t]{c|c} %[t]: head alignment
+    \hline
+    专业名词 &  页码   \\
+    \hline
+    乘法公式 & P5中 \\
+    \hline
+  \end{tabular}
+  \hfill
+  \begin{tabular}[t]{c|c}
+    \hline
+    专业名词  &  页码  \\
+    \hline
+              &  \\
+    \hline
+  \end{tabular}
+  \hfill
+  \begin{tabular}[t]{c|c}
+    \hline
+    专业名词 &  页码 \\
+    \hline
+             &  \\
+    \hline
+  \end{tabular}
+  \caption{C开头专业名词}\label{tabC}
+\end{table}
 
 
- \begin{table}[h!] %[h!]: no bottom
-      \centering
-        \begin{tabular}[t]{c|c} %[t]: head alignment
-          \hline
-          专业名词 &  页码   \\
-          \hline
-          乘法公式 & P5中 \\
-          \hline
-        \end{tabular}
-        \hfill
-        \begin{tabular}[t]{c|c}
-          \hline
-          专业名词  &  页码  \\
-          \hline
-           &  \\
-          \hline
-        \end{tabular}
-        \hfill
-        \begin{tabular}[t]{c|c}
-          \hline
-          专业名词 &  页码 \\
-          \hline
-           &  \\
-          \hline
-        \end{tabular}
-        \caption{C开头专业名词}\label{tabC}
-      \end{table}
+
+\section{J}
+\label{sec:j}
+\begin{table}[H] %[h!]: no bottom
+  \centering
+  \begin{tabular}[t]{c|c} %[t]: head alignment
+    \hline
+    专业名词 &  页码   \\
+    \hline
+    减法公式 & P4中 \\
+    \hline
+  \end{tabular}
+  \hfill
+  \begin{tabular}[t]{c|c}
+    \hline
+    专业名词  &  页码  \\
+    \hline
+              &  \\
+    \hline
+  \end{tabular}
+  \hfill
+  \begin{tabular}[t]{c|c}
+    \hline
+    专业名词 &  页码 \\
+    \hline
+             &  \\
+    \hline
+  \end{tabular}
+  \caption{J开头专业名词}\label{tabJ}
+\end{table}
 
 
-      \begin{center}
-        \section*{B}
-      \end{center}
-      \label{sec:b}
 
-
-      \begin{table}[h!] %[h!]: no bottom
-        \centering
-        \begin{tabular}[t]{c|c} %[t]: head alignment
-          \hline
-          专业名词 &  页码   \\
-          \hline
-          贝叶斯公式 &  P5下\\
-          \hline
-        \end{tabular}
-        \hfill
-        \begin{tabular}[t]{c|c}
-          \hline
-          专业名词  &  页码  \\
-          \hline
-                    &  \\
-          \hline
-        \end{tabular}
-        \hfill
-        \begin{tabular}[t]{c|c}
-          \hline
-          专业名词 &  页码 \\
-          \hline
-                   &  \\
-          \hline
-        \end{tabular}
-        \caption{B开头专业名词}\label{tabB}
-      \end{table}
-
-
-    \begin{center}
-      \section*{Q}
-    \end{center}
-    \label{sec:q}
-
-
-    \begin{table}[h!] %[h!]: no bottom
-      \centering
-        \begin{tabular}[t]{c|c} %[t]: head alignment
-          \hline
-          专业名词 &  页码   \\
-          \hline
-          全概率公式 & P5中 \\
-          \hline
-        \end{tabular}
-        \hfill
-        \begin{tabular}[t]{c|c}
-          \hline
-          专业名词  &  页码  \\
-          \hline
-           &  \\
-          \hline
-        \end{tabular}
-        \hfill
-        \begin{tabular}[t]{c|c}
-          \hline
-          专业名词 &  页码 \\
-          \hline
-           &  \\
-          \hline
-        \end{tabular}
-        \caption{Q开头专业名词}\label{tabQ}
-    \end{table}
-    
-
-\begin{center}
-  \section*{T}
+\begin{center}                  
+  \section*{Q}                  
 \end{center}
+\label{sec:q}
+\begin{table}[!ht] %[!ht]: no bottom
+  \centering
+  \begin{tabular}[t]{c|c} %[t]: head alignment
+    \hline
+    专业名词 &  页码   \\
+    \hline
+    全概率公式 & P5中 \\
+    \hline
+  \end{tabular}
+  \hfill
+  \begin{tabular}[t]{c|c}
+    \hline
+    专业名词  &  页码  \\
+    \hline
+              &  \\
+    \hline
+  \end{tabular}
+  \hfill
+  \begin{tabular}[t]{c|c}
+    \hline
+    专业名词 &  页码 \\
+    \hline
+             &  \\
+    \hline
+  \end{tabular}
+  \caption{Q开头专业名词}\label{tabQ}
+\end{table}
+
+
+
+\section{T}
+
 \label{sec:t}
+\begin{table}[!ht] %[!ht]: no bottom
+  \centering
+  \begin{tabular}[t]{c|c} %[t]: head alignment
+    \hline
+    专业名词 &  页码   \\
+    \hline
+    条件概率 & P5中 \\
+    \hline
+  \end{tabular}
+  \hfill
+  \begin{tabular}[t]{c|c}
+    \hline
+    专业名词  &  页码  \\
+    \hline
+              &  \\
+    \hline
+  \end{tabular}
+  \hfill
+  \begin{tabular}[t]{c|c}
+    \hline
+    专业名词 &  页码 \\
+    \hline
+             &  \\
+    \hline
+  \end{tabular}
+  \caption{T开头专业名词}\label{tabT}
+\end{table}
 
 
- \begin{table}[h!] %[h!]: no bottom
-      \centering
-        \begin{tabular}[t]{c|c} %[t]: head alignment
-          \hline
-          专业名词 &  页码   \\
-          \hline
-          条件概率 & P5中 \\
-          \hline
-        \end{tabular}
-        \hfill
-        \begin{tabular}[t]{c|c}
-          \hline
-          专业名词  &  页码  \\
-          \hline
-           &  \\
-          \hline
-        \end{tabular}
-        \hfill
-        \begin{tabular}[t]{c|c}
-          \hline
-          专业名词 &  页码 \\
-          \hline
-           &  \\
-          \hline
-        \end{tabular}
-        \caption{T开头专业名词}\label{tabT}
-      \end{table}
-
-      
 \end{document}
 
 
