@@ -1,0 +1,189 @@
+\documentclass{wx672article} % $HOME/texmf/tex/latex/wx672article.cls
+\usepackage{wx672cjk}
+
+
+
+% (c) 2002 Matthew Boedicker <mboedick@mboedick.org> (original author) http://mboedick.org
+% (c) 2003-2007 David J. Grant <davidgrant-at-gmail.com> http://www.davidgrant.ca
+% (c) 2008 Nathaniel Johnston <nathaniel@nathanieljohnston.com> http://www.nathanieljohnston.com
+%
+% (c) 2012 Scott Clark <sc932@cornell.edu> cam.cornell.edu/~sc932
+%
+%This work is licensed under the Creative Commons Attribution-Noncommercial-Share Alike 2.5 License. To view a copy of this license, visit http://creativecommons.org/licenses/by-nc-sa/2.5/ or send a letter to Creative Commons, 543 Howard Street, 5th Floor, San Francisco, California, 94105, USA.
+
+%\documentclass[letterpaper,11pt]{article}
+\newlength{\outerbordwidth}
+\pagestyle{empty}
+\raggedbottom
+\raggedright
+\usepackage[svgnames]{xcolor}
+\usepackage{framed}
+\usepackage{tocloft}
+
+
+%-----------------------------------------------------------
+%Edit these values as you see fit
+
+\setlength{\outerbordwidth}{3pt}  % Width of border outside of title bars
+\definecolor{shadecolor}{gray}{0.75}  % Outer background color of title bars (0 = black, 1 = white)
+\definecolor{shadecolorB}{gray}{0.93}  % Inner background color of title bars
+
+
+%-----------------------------------------------------------
+%Margin setup
+
+\setlength{\evensidemargin}{-0.25in}
+\setlength{\headheight}{0in}
+\setlength{\headsep}{0in}
+\setlength{\oddsidemargin}{-0.25in}
+\setlength{\paperheight}{11in}
+\setlength{\paperwidth}{8.5in}
+\setlength{\tabcolsep}{0in}
+\setlength{\textheight}{9.5in}
+\setlength{\textwidth}{7in}
+\setlength{\topmargin}{-0.3in}
+\setlength{\topskip}{0in}
+\setlength{\voffset}{0.1in}
+
+
+%-----------------------------------------------------------
+%Custom commands
+\newcommand{\resitem}[1]{\item #1 \vspace{-2pt}}
+\newcommand{\resheading}[1]{\vspace{8pt}
+  \parbox{\textwidth}{\setlength{\FrameSep}{\outerbordwidth}
+    \begin{shaded}
+\setlength{\fboxsep}{0pt}\framebox[\textwidth][l]{\setlength{\fboxsep}{4pt}\fcolorbox{shadecolorB}{shadecolorB}{\textbf{\sffamily{\mbox{~}\makebox[6.762in][l]{\large #1} \vphantom{p\^{E}}}}}}
+    \end{shaded}
+  }\vspace{-5pt}
+}
+\newcommand{\ressubheading}[4]{
+\begin{tabular*}{6.5in}{l@{\cftdotfill{\cftsecdotsep}\extracolsep{\fill}}r}
+		\textbf{#1} & #2 \\
+		\textit{#3} & \textit{#4} \\
+\end{tabular*}\vspace{-6pt}}
+%-----------------------------------------------------------
+
+
+\begin{document}
+
+\begin{tabular*}{7in}{l@{\extracolsep{\fill}}r}
+\textbf{\Large Qiyuan Pu} & \textbf{\today} \\
+  Write a simple OS independently & pqy7172@gmail.com \\
+  Kunming China & Phone: +86-18314555392 \\
+  Age: 22 & Gender: Male
+\end{tabular*}
+\\
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\resheading{Education Background}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\vspace{2pt}
+\begin{itemize}
+
+\item School: Southwest Forestry University
+
+  \begin{itemize}
+  \item Degree: Bachelor.
+  \item Period: 2014-9 —— 2018-6.
+  \item Major: Computer Science and Technology.
+  \item Main Courses: Several main courses are Data Structure, Operating System,
+    Architecture, Computer Networks. All these courses are more than 90 points, and the
+    total score is100.
+  \item The first semester of the third year of the university went to Thailand as a
+    school exchange student.
+        
+  \end{itemize}
+  
+\end{itemize}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\resheading{Project Introduction}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{enumerate}
+\item 
+
+  RongOS操作系统开发。地址：https://github.com/Puqiyuan/RongOS。这个项目也是我的毕业设
+  计，毕业论文地址https://github.com/Puqiyuan/RongOS/blob/master/doc/thesis/thesis.pdf。通
+  过这个项目我对操作系统的各部分有了较为深刻的理解。
+
+  值得一提的是论文及其中的插图都是我用LaTex排版的，有的图还非常复杂，比如进程管理的插图
+  https://github.com/Puqiyuan/RongOS/blob/master/doc/thesis/figs/process-manage.pdf
+  ，由此我的LaTeX排版能力应该也是不错的。
+  
+\item 清华清橙编程题练习。地址：https://github.com/Puqiyuan/Tsinsen\_ACM。这个项目是独立自
+  主完成清橙编程题目。目前所完成的题目都是满分通过，其中某些题目的通过率较低，最低有16\%。
+  所有题解代码最大的特色就是我只依赖了C标准库中少量的几个基本库函数比如printf，malloc等。
+  当然实际生产产品时不提倡这样做，但在学习阶段我的观点还是较多的自己写代码，以训练自己的编码
+  技巧。
+
+  其它类似此的题解练习还有：https://github.com/Puqiyuan/URI\_ACM。这个开始的较近，所以暂时
+  完成的题目不够多，难度也还不够大。不过会继续下去，编码是我的生活乐趣。
+
+\item 其它几个值得一提的项目有https://github.com/Puqiyuan/CLRS\_Algorithms\_Implement，这个
+  是实现算法导论里的算法，放在这主要证明我的确是热爱所学专业，热爱并愿意学习。学校方面并没有
+  要求阅读英文原版的Introduction to Algorithm。
+
+  接下来的两个小C程序再次用来证明我的编码能力。它们都是我完全独立写出来的。一个高精度（小
+  数点前后各可达999位）浮点计算器：
+  https://github.com/Puqiyuan/High\_Accuracy\_Float\_Calculator/blob/master/Calculator.c。
+  
+  操作系统中银行家算法的实现：
+  https://github.com/Puqiyuan/OS\_Algorithms/blob/master/BankerAlgorithm/Programs/banker.c。
+  
+  
+\end{enumerate}
+
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\resheading{自我评价}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\vspace{2pt}
+
+
+\hspace*{0.5cm} 具有较强的自学能力，大学期间培养了使用Google快速解决问题的能力，学习新东西较快，由于使用
+Google英文，英文阅读沟通能力较强(CET6，考研英语一70分，满分100)。
+
+\hspace*{0.5cm} 具有三年Debian Linux使用配置经验，熟悉Linux环境，有一定的Bash Shell编程经验。善于使用Makefile，
+git，vim，emacs。编程，逻辑能力较优，如项目介绍中所体现。
+
+\hspace*{0.5cm} 耐心毅力都不错，大学期间每周坚持十公里长跑。解决技术问题很多时候更靠耐心和
+毅力。热爱学习，大学期间多次成绩排名前列。
+
+\hspace*{0.5cm} 总结起来，大学期间，虽然没有多少实际商业项目经验，但是看的书较多，自己独立写的
+代码不少，是同学眼中的学霸，最大的特点是爱钻研好学，在刚开始工作时，虽无多少经验，但拥有这
+些基础能力，好的学习习惯，才有足够的后劲来持续学习发展。
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\resheading{个人荣誉}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\vspace{2pt}
+\begin{itemize}
+\item 2014 — 2015年度校级三好学生。
+\item 2015 — 2016年度省级三好学生。
+\item 优秀毕业生。
+\item 优秀毕业论文（设计）。
+\item 2018年云南省大学生计算机作品赛二等奖。
+\end{itemize}
+
+
+
+\end{document}
+
+
+
+
+
+
+
+
+%%% Local Variables:
+%%% mode: latex
+%%% TeX-master: t
+%%% End:
