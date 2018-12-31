@@ -1,0 +1,132 @@
+\documentclass[12pt,a4paper]{article}
+\usepackage[top=3cm,bottom=3cm,left=3cm,right=3cm]{geometry}
+
+\usepackage{graphicx}
+\graphicspath{{./figs/}{../figs/}{./}{../}} %note that the trailing “/” is required
+
+\usepackage{latexsym,pifont,units,amsmath,amsfonts,amssymb,marvosym}
+
+\usepackage{indentfirst}
+\usepackage[indentafter,pagestyles]{titlesec}
+
+\usepackage{xcolor}
+
+\usepackage{multicol,rotating,soul}
+\setul{1.5pt}{.4pt}% 1.5pt below contents
+
+\usepackage{xltxtra} %fontspec,xunicode are loaded here.
+\defaultfontfeatures{Mapping=tex-text}
+\setsansfont{DejaVu Sans}
+\setmainfont{DejaVu Serif}
+
+\usepackage{xeCJK}
+\setCJKmainfont[BoldFont={WenQuanYi Zen Hei}, ItalicFont={WenQuanYi Zen Hei}]{SimSun}
+\setCJKfamilyfont{hei}{WenQuanYi Zen Hei}
+\setCJKfamilyfont{song}{SimSun}
+\newcommand{\ziju}[1]{\renewcommand{\CJKglue}{\hskip #1}}
+
+\usepackage{hyperref}
+
+\usepackage{fancyhdr}
+\pagestyle{fancy}
+
+% use snippet 'im', 'minted' to add code blocks
+\usepackage{minted}
+
+
+
+\newcommand{\code}[1]{\texttt{\textcolor{violet}{#1}}}
+\newcommand{\cfbox}[2]{%
+  \colorlet{currentcolor}{.}%
+  {\color{#1}\fbox{\color{currentcolor}#2}}%
+}
+
+\pagestyle{empty}
+
+\begin{document}
+\begin{center}
+  \begin{Huge}
+    承包合同
+  \end{Huge}
+\end{center}
+经甲、乙双方友好协商修建房屋，甲方将房屋修建事宜承包给乙方，内容如下。
+\newline{}
+\newline{}
+甲方：
+\newline{}
+\newline{}
+乙方：
+\newline{}
+\newline{}
+第一条
+\newline{}
+乙方自带材料，包括但不限于木方、层板、支撑架、搅拌机、垂直起吊机、斗车、各种钢筋加工机器以
+及各种用具。
+%甲方持有南部县一环路阳光花园B栋二单元702套房，租给乙方\hspace{1cm}作为家庭住房使用。
+\newline{}
+\newline{}
+第二条
+\newline{}
+乙方要完成的具体的工作内容为：基础地梁、柱、楼层柱、梁、板、斜屋面、线条以及屋面天沟。从正
+负00层屋内的钢筋、网片、浇灌地坪。正负00至坡屋顶的内容包括室内所有砖，所有粉刷，室外正负00
+至坡屋顶所有粉刷，天沟粉刷。室内外门窗，洞口收小口粉刷。所有的梁、板、斜屋面以及浇灌一律不
+得蜂窝麻面。斜屋面坡度保持斜线顺直以及达到防水标准。正立面的门厅三间室外墙贴砖。
+\newline{}
+\newline{}
+第三条
+\newline{}
+外墙线条、屋顶、天沟同各屋水平板一次性浇灌，屋面天沟支吊模一次性浇灌。
+\newline{}
+\newline{}
+第四条
+\newline{}
+乙方在进场施工中，必须与甲方友好沟通，安全施工。乙方在以上施工内容中不得以任何理由提出涨价、
+加价。
+\newline{}
+\newline{}
+第五条
+\newline{}
+乙方在施工过程中每一个环节都必须达到甲方的验收标准，如果验收不通过，由此引起返工，造成的材
+料费、人工费以及其它可能的费用均由乙方负责。
+\newline{}
+\newline{}
+第六条
+\newline{}
+甲方住宅建设工程承包给乙方以每平方米230元人民币的价格。乙方生活自理，其中甲方只提供开工，竣工，
+每层浇灌板面混泥土餐费。
+\newline{}
+\newline{}
+第七条
+\newline{}
+付款方式：每层板面浇灌完成时付款百分之\textunderscore\textunderscore\textunderscore。室内外粉水、门窗、小口收完便付余下尾
+款百分之\textunderscore\textunderscore\textunderscore。
+\newline{}
+\newline{}
+第八条
+\newline{}
+以上合同一式两份，签字生效，不得以任何理由违背该合同条款。
+\newline{}
+\newline{}
+甲方（指纹）：\hspace*{2cm}电话：\hspace*{3cm}身份证号：
+\newline{}
+\newline{}
+\newline{}
+乙方（指纹）：\hspace*{2cm}电话：\hspace*{3cm}身份证号：
+\newline{}
+\hspace*{8cm}年\hspace*{1cm}月\hspace*{1cm}日
+
+
+
+
+% \renewcommand{\abstractname}{Abstract}
+
+
+\clearpage
+\end{document}
+% (setq-default TeX-master nil)
+
+
+%%% Local Variables:
+%%% mode: latex
+%%% TeX-master: "contact"
+%%% End:
