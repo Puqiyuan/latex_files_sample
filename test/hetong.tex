@@ -1,0 +1,65 @@
+\documentclass[12pt,a4paper]{article}
+\usepackage[top=3cm,bottom=3cm,left=3cm,right=3cm]{geometry}
+
+\usepackage{graphicx}
+\graphicspath{{./figs/}{../figs/}{./}{../}} %note that the trailing “/” is required
+
+\usepackage{latexsym,pifont,units,amsmath,amsfonts,amssymb,marvosym}
+
+\usepackage{indentfirst}
+\usepackage[indentafter,pagestyles]{titlesec}
+
+\usepackage{xcolor}
+
+\usepackage{multicol,rotating,soul}
+\setul{1.5pt}{.4pt}% 1.5pt below contents
+
+\usepackage{xltxtra} %fontspec,xunicode are loaded here.
+\defaultfontfeatures{Mapping=tex-text}
+\setsansfont{DejaVu Sans}
+\setmainfont{DejaVu Serif}
+
+\usepackage{xeCJK}
+\setCJKmainfont[BoldFont={WenQuanYi Zen Hei}, ItalicFont={WenQuanYi Zen Hei}]{SimSun}
+\setCJKfamilyfont{hei}{WenQuanYi Zen Hei}
+\setCJKfamilyfont{song}{SimSun}
+\newcommand{\ziju}[1]{\renewcommand{\CJKglue}{\hskip #1}}
+
+\usepackage{hyperref}
+
+\usepackage{fancyhdr}
+\pagestyle{fancy}
+
+% use snippet 'im', 'minted' to add code blocks
+\usepackage{minted}
+
+
+
+\newcommand{\code}[1]{\texttt{\textcolor{violet}{#1}}}
+\newcommand{\cfbox}[2]{%
+  \colorlet{currentcolor}{.}%
+  {\color{#1}\fbox{\color{currentcolor}#2}}%
+}
+
+\pagestyle{empty}
+
+\begin{document}
+\begin{center}
+  \begin{Huge}
+    租房合同
+  \end{Huge}
+\end{center}
+
+
+% \renewcommand{\abstractname}{Abstract}
+
+
+\clearpage
+\end{document}
+% (setq-default TeX-master nil)
+
+
+%%% Local Variables:
+%%% mode: latex
+%%% TeX-master: "contact"
+%%% End:
