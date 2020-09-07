@@ -1,5 +1,6 @@
 \documentclass[scheme=plain]{ctexart}
-
+\usepackage{minted}
+\usepackage[a4paper, total={6in, 9in}]{geometry}
 %\title{测试}
 %\author{启元}
 
@@ -20,12 +21,392 @@
 \end{center}
 
 \begin{center}
-  Cauchy Pu
+  \begin{huge}
+    Cauchy Pu
+  \end{huge}
 \end{center}
 
 \section{问题概述}
 \label{sec:wtgs}
+夹杂各种事情，终于ltp的madvise的分析报告出炉，自本次报告后我的工作重心可能就要转移了。
 
+先看问题现象，amdvise共有几组测试例程，目前大部分都有问题。
+\begin{minted}[frame=single]{bash}
+sudo ./madvise01
+CONF: MADV_HWPOISON is not supported
+CONF: MADV_MERGEABLE is not supported
+CONF: MADV_UNMERGEABLE is not supported
+CONF: MADV_HUGEPAGE is not supported
+CONF: MADV_NOHUGEPAGE is not supported
+\end{minted}
+
+\begin{minted}[frame=single]{bash}
+sudo ./madvise02
+CONF: MADV_WILLNEED is not supported
+\end{minted}
+
+\begin{minted}[frame=single]{bash}
+sudo ./madvise06
+CONF: memory cgroup needed
+\end{minted}
+
+\begin{minted}[frame=single, style=bw]{bash}
+sudo ./madvise07
+CONF: CONFIG_MEMORY_FAILURE probably not set in kconfig: EINVAL
+\end{minted}
+
+\begin{minted}[frame=single, style=bw]{bash}
+sudo ./madvise09
+CONF: '/sys/fs/cgroup/memory/' not present, CONFIG_MEMCG missing?
+\end{minted}
+
+\section{问题分析}
+\label{sec:wtfx}
+madvise是啥呢？先有个基础认识，摘抄一段man madvise：
+\begin{quote}
+  int madvise(void *addr, size\_t length, int advice):\\ \\
+  The  madvise()  system call is used to give advice or directions to the kernel about the
+  address range beginning at address addr and with size length bytes. In most cases, the
+  goal of such advice is to improve system or application performance.
+\end{quote}
+
+看起来用途蛮大，用来给内核建议一段内存该怎么用，可以用来改善系统或应用程序的性能。但是申威
+平台上报出了很多不支持的错误，根据前述经验，“不支持”可能不是真的“不支持”，还得仔细分析内核
+配置、内核代码以及做实验验证每一种具体情况。
+
+只有一个一个分析上述错误了。
+
+\begin{enumerate}
+\item madvise01
+  
+  这些MADV开头的其实都是advice的一种，下面来具体看看每种是什么意义。
+  \begin{enumerate}
+  \item MADV\_HWPOISON\\
+    首先是man madvise的信息：
+    \begin{quote}
+      Poison the pages in the range specified by addr and length and handle subsequent
+      references to those pages like a hardware memory corruption.  This operation  is
+      available only for privileged (CAP\_SYS\_ADMIN) processes.  This operation may
+      result in the calling process receiving a SIGBUS and the page being unmapped.\\
+      
+      This feature is intended for testing of memory error-handling code; it is available
+      only if the kernel was configured with CONFIG\_MEMORY\_FAILURE.
+    \end{quote}
+    概要地说，这是一个feature，需要打开CONFIG\_MEMORY\_FAILURE配置。理论上，这个feature并
+    没有太多的用处，只是把一个地址范围标记为poison，然后对这块地址的访问就像是在访问一块“内
+    存出错”了的地址，这个feature可以用来测试“内存出错处理代码”。
+
+    那么，什么叫“内存出错”，以及“内存出错处理代码”长啥样？暂且不表。
+
+    现在尝试去打开MEMORY\_FAILURE，当然不是直接就打开这个内核选项的。帮助信息还是要看看：
+    \begin{quote}
+      Enables code to recover from some memory failures on systems with MCA recovery. This
+      allows a system to continue running even when some of its memory has uncorrected
+      errors. This requires special hardware support and typically ECC memory.
+    \end{quote}
+
+    有几个专业名词了，MCA recovery是啥？ECC memory是啥？稍微Google下，参考文献1、2给出了点
+    有用信息。简单说就是，ECC memory是一种特别的内存，它可以在内存受到辐射等情况下时，出现
+    了bit翻转也能纠错从而继续工作。为了配合ECC memory的这种特点，我们OS开发人员当然就有
+    工作啦，比如现在ECC memory出错了，我们的内核是不是要提供个处理函数啊，这个就叫MCA
+    recovery。\\
+   
+    那这跟MADV\_HWPOISON标志有什么关系嘛。\\
+    
+    嗯，其实就是，ECC memory出错（比如本来存的是比特0，后来翻转为1）概率其实是很小的，这主
+    要在金融以及数据中心可能会考虑这种情况，或者是，你的计算机系统要运行在外太空，辐射较强，
+    翻转机率提高。\\
+
+    那我们写在内核里的“memory error-handling code”的代码就没法测了呀，咱也不能带着我们的
+    Linux飞到外太空去不是，即使能这样做，在外太空翻转的概率也只是提高了，而不是一定。\\
+
+    所以内核开发人员弄了个MEMORY\_FAILURE的feature，给某段内存标上这个标志后，访问这段内存
+    就是“like a hardware memory corruption”，像是访问内存出错的地方。这样就可以触发我们的
+    “memory error-handlingcode”了。\\
+
+    说来说去，这个feature是为模拟测试硬件准备的，就是我们现在没有ECC memory这种“高级货”的
+    时候也能写并测试“memory error-handling code”，暂时就先到这里吧。\\
+
+    接下来先打开MEMORY\_FAILURE编译下。不出意外编译会有错，没错才是不正常。mm/madvise.c会
+    报出有一些宏常数定义找不到，于是找到定义这些宏的文件，文件
+    usr/in clude/asm-generic/mman-common.h即是。将mman-common.h拷贝一份到include/linux下，同时修
+    改mm/madvise.c加上头文件\#include <linux/mman-common.h>，再编译，
+    又会有另外的宏重复定义，在include/linux/mman-common.h中注释这些宏，于是新内核就可以编
+    译出来测试了，发现本项测试通过。暂且到这儿吧，后面madvise07其实还有有问题，到那时再表。
+    \textcolor{red}{最后要注意，这种修改其实是不“正规的”，不过为了往下测试验证也未尝不可，
+      到用户真的有需要CONFIG\_MEMORY\_FAILURE，我们再和研究院沟通或他们做，或我们自己“正
+      规”的来把这事顺手做了。}
+  \item MADV\_MERGEABLE\\
+    首先还是man madvise的信息了：
+    \begin{quotation}
+      Enable Kernel Samepage Merging (KSM) for the pages in the range specified by addr
+      and length.  The kernel regularly scans those areas  of  user  memory that  have
+      been marked as mergeable, looking for pages with identical content.  These are
+      replaced by a single write-protected page (which is automatically copied if a
+      process later wants to update the contentof the page).
+            
+      The MADV\_MERGEABLE and MADV\_UNMERGEABLE operations are available only if the kernel
+      was configured with CONFIG\_KSM.
+    \end{quotation}
+    就是建议内核把相同的内容的page merge起来以节省内存。再结合参考信息3，此feature不涉及硬
+    件信息，纯属打开内核配置的问题，经测试，打开CONFIG\_KSM配置后测试通过。
+  \item MADV\_UNMERGEABLE\\
+    与MADV\_MERGEABLE是配对的。
+  \item MADV\_HUGEPAGE\\
+    本项依旧是软件层面的事情，与硬件无关，内核社区自己已实现，打开内核配置
+    CONFIG\_TRANSPARENT\_HUGEPAGE即可通过测试，与上述MADV\_MERGEABLE类似，不再赘述。
+  \item MADV\_NOHUGEPAGE\\
+    与MADV\_HUGEPAGE是配对的。
+  \end{enumerate}
+\item madvise02
+  \begin{enumerate}
+  \item MADV\_WILLNEED\\
+    看看man信息：
+    \begin{quote}
+      Expect access in the near future.  (Hence, it might be a good idea to read some
+      pages ahead.)
+    \end{quote}
+
+    把一个页面标记为MADV\_WILLNEED会建议内核提前把页面准备好，方便后面使用提高效率。这个特
+    点没有要求任何内核特殊的配置。按道理不会打印is not supported啊。\\
+
+    于是检查测试代码madvise02.c，这里打印了串：
+\begin{minted}[frame=single, style=bw]{c}
+if (tc->skip == 1) {
+ tst_res(TCONF, "%s is not supported", tc->name);
+ return;
+}
+\end{minted}
+    而tc->skip在这里被改变成1：
+\begin{minted}[frame=single, style=bw]{c}
+if ((tst_kvercmp(3, 9, 0)) > 0 &&
+				tc->exp_errno == EBADF)
+ tc->skip = 1;
+\end{minted}
+    经查tst\_kvercmp会比较内核版本，我们的版本是4.19大于3.9，EBADF是说映射已经存在但不是一个
+    文件。所有这一切均不是在确认madvise函数是否支持MADV\_WILLNEED，故认为这个not supported
+    打印具有误导性，可以和社区沟通它究竟想表达什么。后面的实验验证会说明实际上
+    MADV\_WILLNEED是支持的。
+  \end{enumerate}
+  
+  另外值得一提的是，为了修复madvise01.c的MADV\_MERGEABLE is not supported问题，打开内核
+  CONFIG\_KSM选项，发现madvise02出现了MADV\_MERGEABLE和MADV\_U-\\NMERGEABLE is not
+  supported打印。\\
+
+  实际上可以肯定，来自参考文献和内核代码实现的佐证，打开CONFIG\_KSM，madvise函数的
+  MERGEABLE功能就会开起，这在前述madvise01分析中已经说明。\\
+
+  那么为什么还会有这个打印呢？和MADV\_WILLNEED打印出来的流程类似，只不过这次是madvise02.c
+  的下面代码修改了tc->skip：
+\begin{minted}[frame=single, style=bw]{c}
+if (access(KSM_SYS_DIR, F_OK) == 0)
+ tc->skip = 1;
+\end{minted}
+
+  KSM\_SYS\_DIR被定义为/sys/kernel/mm/ksm，这在内核配置为CONFIG\_KSM时该文件自然存在。而
+  F\_OK是测试文件的存在性，故条件满足。tc->skip被设置为1，进而not supported被打印，同样的
+  情况，这个打印具有误导性，因为内核已经被配置为CONFIG\_KSM。
+  
+  
+\item madvise06\\
+  打印是“memory cgroup needed”，看样子是差什么东西，memory和cgroup，那差的这个是啥东西啊。\\
+  
+  看代码是这里打印出来的：
+\begin{minted}[frame=single, style=bw]{c}
+#define MNT_NAME "memory"
+SAFE_MKDIR(MNT_NAME, 0700);
+if (mount("memory", MNT_NAME, "cgroup", 0, "memory") == -1) {
+ if (errno == ENODEV || errno == ENOENT)
+  tst_brk(TCONF, "memory cgroup needed");
+}
+\end{minted}
+
+  看样子是要看看mount了，老朋友man这么说：
+  
+  \begin{quote}
+    int mount(const char *source, const char *target,
+    const char *filesystemtype, unsigned long mountflags,
+    const void *data):\\
+    mount()  attaches the filesystem specified by source (which is often a pathname
+    referring to a device, but can also be the pathname of a directory or file, or a dummy
+    string) to the location (a directory or file) specified by the pathname in target.\\
+
+    The  data  argument  is  interpreted  by  the  different filesystems.  Typically it is
+    a string of comma-separated options understood by this filesystem.  See mount(8) for
+    details of the options available foreach filesystem type.
+  \end{quote}
+
+  其中要注意的第二段，我已经故意摘出来了。我们要挂载的文件系统是cgroup，那么这个filesystem是
+  怎么解释它的data的呢？\\
+
+  简言之，/sys/fs/cgroup下有许多controller，而我们关心的是那个叫memory(就是data参数指明
+  的)的controller，把它挂到由MNT\_NAME指明的路径下...等等，啥叫cgroup，controller又是啥啊？
+  这个要看看参考文献4、5了。\\
+
+  ls /sys/fs/cgroup/memory看下，嗯，确实没有这个目录，那它该怎么来呢？\\
+
+  参考文献文献5讲了下，要打开CONFIG\_MEMCG配置，如此一试，果真如此。报错没有了，madvise06
+  测试也过了。当然个中细节还要细看参考文献4、5啊。
+\item madvise07
+  
+  madvise07要费点劲了。\\
+
+  首先是没有前述的配置选项打开时，错误表现为前述问题概述节的madvise07贴图。打开
+  CONFIG\_MEMORY\_FAILURE时，错误表现为：
+\begin{minted}[frame=single, style=bw]{c}
+FAIL: Did not receive SIGBUS on accessing poisoned page
+\end{minted}
+
+  怎么就收不到SIGBUS信号了呢？本情况下，多半是申威内核差点东西，因为前述提到
+  MEMORY\_FAILURE需要特殊的内存类型，但是，这么点“东西”是啥呢？看来还需要细细探究一番。\\
+
+  申威内核运行madvise07是上诉did not receive的表现，那Intel内核呢？于是在X86-64平台运行了
+  下madvise07，结果正常，打印：
+\begin{minted}[frame=single, style=bw]{c}
+PASS: Received SIGBUS after accessing poisoned page
+\end{minted}
+
+  这说明X86-64上可以收到SIGBUS信号。那就看看madvise07.c了，关键的是这段（重组了下顺序）：
+\begin{minted}[frame=single, style=bw]{c}
+//函数run_child
+if (madvise(mem, msize, MADV_HWPOISON) == -1) {
+ if (errno == EINVAL) {
+  tst_res(TCONF | TERRNO,
+  "CONFIG_MEMORY_FAILURE probably not set in kconfig");
+   } else {
+      tst_res(TFAIL | TERRNO, "Could not poison memory");
+   }
+  exit(0);
+}
+
+*((char *)mem) = 'd';
+tst_res(TFAIL, "Did not receive SIGBUS on accessing poisoned page");
+
+//另一个函数run
+if (pid == 0) {
+ run_child();
+ exit(0);
+}
+SAFE_WAITPID(pid, &status, 0);
+	if (WIFSIGNALED(status) && WTERMSIG(status) == SIGBUS) {
+	 tst_res(TPASS, "Received SIGBUS after accessing poisoned page");
+     return;
+}
+\end{minted}
+
+  简单来说就是，父进程起了个子进程运行run\_child函数，而在run\_child函数里，调用了madvise
+  把一段内存标记为MADV\_HWPOISON，随后语句*((char *)mem) = 'd'访问了这段内存。按道理,访问
+  一段标记为MADV\_HWPOISON的内存应该被发送SIGBUS信号，从而子进程被杀死，父进程里打印出
+  Received SIGBUS after accessing poisoned page。如果被杀死的子进程没有收到SIGBUS，也就是
+  语句*((char *)mem) = 'd'访问并没有引起子进程异常退出，所以后面的一句：
+\begin{minted}[frame=single, style=bw]{c}
+tst_res(TFAIL, "Did not receive SIGBUS on accessing poisoned page");
+\end{minted}
+  会被正常执行，就是在申威平台看到的这句话了，它不会出现在X86-64平台。\\
+
+  userland的原因如此，还是那个问题申威内核究竟差了什么，导致没能发送SIGBUS信号给用户进程？\\
+  
+  参考文献1说了句蛮有用的话：
+
+  \begin{quote}
+    The code consists of a the high level handler in mm/memory-failure.c, a new page
+    poison bit and various checks in the VM to handle poisoned pages.
+  \end{quote}
+
+  那就稍微研究下mm/memory-failure.c咯。\\
+
+  可以看到，函数memory\_failre正是内存出错时会被调用的处理函数。它向下会一步步调用到
+  kill\_proc函数，而函数kill\_proc里会调用force\_sig\_mceerr或send\_sig\_mceerr函数给应用
+  程序发送信号并杀死应用进程。那我们就来看看内核里这两个函数的实现，它们实现在signal.c里：
+  
+\begin{minted}[frame=single, style=bw, breaklines]{c}
+int force_sig_mceerr(int code, void __user *addr, short lsb, struct task_struct *t)
+{
+	struct siginfo info;
+
+	WARN_ON((code != BUS_MCEERR_AO) && (code != BUS_MCEERR_AR));
+	clear_siginfo(&info);
+	info.si_signo = SIGBUS;
+	info.si_errno = 0;
+	info.si_code = code;
+	info.si_addr = addr;
+	info.si_addr_lsb = lsb;
+	return force_sig_info(info.si_signo, &info, t);
+}
+
+int send_sig_mceerr(int code, void __user *addr, short lsb, struct task_struct *t)
+{
+	struct siginfo info;
+
+	WARN_ON((code != BUS_MCEERR_AO) && (code != BUS_MCEERR_AR));
+	clear_siginfo(&info);
+	info.si_signo = SIGBUS;
+	info.si_errno = 0;
+	info.si_code = code;
+	info.si_addr = addr;
+	info.si_addr_lsb = lsb;
+	return send_sig_info(info.si_signo, &info, t);
+}
+\end{minted}
+
+  终于看到心心念念的SIGBUS啊！就是这里确定给用户程序发送信号的。怎么验证这点呢？很简单啦，
+  把它改成SIGSEGV这样的，再在X86-64平台运行madvise07，打印就变成了FAIL: Child killed by
+  SIGSEGV，这正是因为我们精准改动要的效果哦。\\
+
+  而在申威平台这些都有，但还是没有PASS打印，那就是看看调用了memory\_failure啦。这里就很关
+  键了，是文件arch/x86/kernel/cpu/mce/core.c！这个文件arch/sw\_64/下是没有的。\\
+
+  上述文件里的函数do\_machine\_check会调用memory\_failure。而这个do\_machine\_check函数实
+  际是内存出错时的\textcolor{red}{异常}处理函数，异常产生时，会\textcolor{red}{自动触发}执
+  行。至于异常产生怎么就自动执行函数了，说实话这对于内核或者现代IT基础来说很关键，不过在本
+  文里并不关心，参考文献6给出了点信息，感兴趣的读者可以看看。\\
+
+  总之，到这里真相大白了，申威内核缺少响应内存错误的句柄函数do\_machine\_check，如果用户有
+  需要（幻想申威也能有这样的客户啊，搭载申威CPU飞向外太空？超级数据中心也用SW CPU，国际金融
+  中心相中太湖旁的WIAT），\textcolor{red}{我们就可以随手做了，注意这并不依赖要ECC memory才能
+    做}，正如前文所料，这正是MEMORY\_FAILURE的存在意义。
+    
+\item madvise09
+
+  根据提示首先是打开CONFIG\_MEMCG配置了，错误转变成了：
+\begin{minted}[frame=single, style=bw]{c}
+FAIL: Found corrupted page
+\end{minted}
+
+  被标记为MADV\_FREE的页，并不会立即释放，只有在遭遇内存压力时才会。而在标记为MADV\_FREE和
+  真正释放时之间有页又再次被释放的话，这些被再次写的页不应该被释放，4.19.90的Intel内核遵循
+  这个，但是申威4.19.90内核不遵循，这些被再次写过的页释放后填充0，与第二次写入的值不一样，
+  所以认为是corrupted了。
+  
+\end{enumerate}
+
+\section{实验验证}
+\label{sec:syyz}
+分析中已经指明了如何验证，包括打开相关配置，查找、修改内核代码来验证。
+
+\section{解决方案}
+\label{sec:jjfa}
+\begin{enumerate}
+\item MADV\_HWPOISON：配置MEMORY\_FAILURE打开，同时实现Intel下等价的异常函数
+  do\_machine\_check。
+\item MADV\_MERGEABLE：配置CONFIG\_KSM打开。
+\item MADV\_HUGEPAGE：配置TRANSPARENT\_HUGEPAGE打开。
+\item MADV\_WILLNEED：跳过测试，与社区沟通not supported打印误导。
+\item 打开CONFIG\_MEMCG来支持cgroup的memory controller。
+\item 以MADV\_FREE标志调用madvise时，注意再次被写的页也会被释放，终极解决方案需要修正
+  cgroup的memory controller实现以使得符合标准。
+\end{enumerate}
+
+\section{参考文献}
+\label{sec:ckwx}
+\begin{enumerate}
+\item https://www.kernel.org/doc/html/v4.18/vm/hwpoison.html
+\item https://en.wikipedia.org/wiki/ECC\_memory
+\item https://www.kernel.org/doc/html/v4.19/admin-guide/mm/ksm.html
+\item https://man7.org/linux/man-pages/man7/cgroups.7.html
+\item https://www.kernel.org/doc/Documentation/cgroup-v1/memory.txt
+\item https://www.kernel.org/doc/html/latest/x86/exception-tables.html
+\end{enumerate}
 
 \end{document}
 

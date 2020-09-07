@@ -1,0 +1,51 @@
+\documentclass[scheme=plain]{ctexart}
+
+\title{IO调度优化与Debug}
+\author{Cauchy Pu}
+
+\begin{document}
+
+\maketitle
+
+\begin{abstract}
+本文介绍内核的IO调度，利用FIO工具来测试IO性能，并以此工具来复现IO相关的Bug并最终基于对内
+核IO调度的分析来解决这个Bug，同时尝试优化申威内核的IO调度。
+\end{abstract}
+
+\clearpage
+\pagenumbering{roman}
+\tableofcontents
+% \listoffigures{}
+% \listoftables{}
+
+\clearpage
+\pagenumbering{arabic}
+Obviously the amount of time depends on where the head was previously located and how
+fortunate you are with the location of the sector on the platter: if it’s
+directly under the head you do not need to wait, but if it just passed the head you have
+to wait for a complete revolution. Even on the fastest 15k RPM disk that
+takes 4 milliseconds (15,000 rotations per minute = 250 rotations per second, which means
+one rotation is 1/250th of a second or 4ms). Admittedly that’s faster than
+the sushi in my earlier analogy, but the chances are you will need to read or write a far
+larger number of blocks than I can eat sushi dishes (and trust me, on a
+good day I can pack a fair few away).
+
+What about the next block? Well, if that next block is somewhere else on the disk, you
+will need to incur the same penalties of seek time and rotational latency. We
+call this type of operation a random I/O. But if the next block happened to be located
+directly after the previous one on the same track, the disk head would
+encounter it immediately afterwards, incurring no wait time (i.e. no latency). This, of
+course, is a sequential I/O.
+
+On the other hand, if you can perform the I/O sequentially you may be able to reduce the
+IOPS requirement and increase the throughput, allowing the disk system to
+deliver more data. I know of Oracle customers who spend large amounts of time and
+resources carving up and re-ordering their data in order to allow queries to
+perform sequential I/O. They figure that the penalty incurred from all of this preparation
+is worth it in the long run, as subsequent queries perform better.
+\end{document}
+
+%%% Local Variables:
+%%% mode: latex
+%%% TeX-master: t
+%%% End:
