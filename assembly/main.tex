@@ -123,36 +123,31 @@
   \end{center}
 \end{frame}
 
+  \begin{frame}{A simple world}
+    I want struct, array and many functions...
+  \end{frame}
+
+  \begin{frame}{A simple world}
+  Now some real feed...
+    \begin{example}
+      .section .data\\
+    data\_items:
+    .long 3,67,34,222,45,75,54,34,44,33,22,11,66,0\\
+    .section .text
+    \end{example}
+  \end{frame}
+
+    \begin{frame}{A simple world}
+      Some caveat
+  \end{frame}
+
 \section{Inline Assembly}
 \begin{frame}{Inline Assembly}
   When you travel happily in the kernel source...
   \begin{alertblock}{Damn!}
-\begin{verbatim*}
-__asm__ __volatile__(
-    "movl %6,%%edi\n\t"
-    "repne\n\t"
-    "scasb\n\t"
-    "notl %%ecx\n\t"
-    "decl %%ecx\n\t"    /* NOTE! This also sets Z if searchstring='' */
-    "movl %%ecx,%%edx\n"
-    "1:\tmovl %6,%%edi\n\t"
-    "movl %%esi,%%eax\n\t"
-    "movl %%edx,%%ecx\n\t"
-    "repe\n\t"
-    "cmpsb\n\t"
-    "je 2f\n\t"     /* also works for empty string, see above */
-    "xchgl %%eax,%%esi\n\t"
-    "incl %%esi\n\t"
-    "cmpb $0,-1(%%eax)\n\t"
-    "jne 1b\n\t"
-    "xorl %%eax,%%eax\n\t"
-    "2:"
-    : "=a" (__res), "=&c" (d0), "=&S" (d1)
-    : "0" (0), "1" (0xffffffff), "2" (cs), "g" (ct)
-    : "dx", "di");
-return __res;
-\end{verbatim*}
- \end{alertblock}
+    \_\_asm\_\_ ("swp \%0, \%0, [\%1]" : : "r"(val), "r"(addr));
+  \end{alertblock}
+  This is inline assembly
   
 \end{frame}
 
@@ -162,15 +157,25 @@ return __res;
 \end{frame}
 
 % abi
-\section{Agreements}
+\section{Agreements(ABI}
 \begin{frame}{Agreements}
   
 \end{frame}
 
 \section{Reverse Engineering}
 \begin{frame}{Reverse Engineering}
-  
+Some friends you need...  
 \end{frame}
+
+\section{Questions}
+\begin{frame}{Questions}
+  \begin{center}
+    \vspace{1.5cm}
+    \Huge ANY\\
+    \Huge QUESTIONS?\\
+  \end{center}
+\end{frame}
+
 
 \section{References}
 \begin{frame}[allowframebreaks]{References}
@@ -178,12 +183,44 @@ return __res;
 
         % Article is the default.
         \setbeamertemplate{bibliography item}[book]
-        \bibitem{Hartshorne1977}
+        \bibitem{Randal2018}
          Randal E. Bryant, David R. O'Hallaron
         \newblock \emph{Computer Systems, A prorgammer's perspective}.
         \newblock Pearson, 2018
-        \end{thebibliography}
-\end{frame}
+   
+
+      \setbeamertemplate{bibliography item}[book]
+        \bibitem{Hartshorne1977}
+          Jonathan Bartlett
+        \newblock \emph{Programming from the Ground Up}.
+        % \newblock
+
+        \setbeamertemplate{bibliography item}[book]
+        \bibitem{Hartshorne1977}
+          John R. Levine
+        \newblock \emph{Linkers \& Loaders}.
+     %    \newblock 
+
+        
+\setbeamertemplate{bibliography item}[online]
+
+        \bibitem{HR2018}
+          Sandeep.S
+        \newblock \emph{GCC-Inline-Assembly-HOWTO}, 2003.
+        \newblock \url{https://www.ibiblio.org/gferg/ldp/GCC-Inline-Assembly-HOWTO.html}
+   \end{thebibliography}
+ \end{frame}
+
+ \section{Thanks}
+
+ \begin{frame}{Thanks}
+   \begin{center}
+     \vspace{2cm}
+     \Huge Thank you ;)!\\
+     
+     \emph{pqy7172@gmail.com}
+   \end{center}
+ \end{frame}
 
 
 \end{document}
