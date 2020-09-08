@@ -123,23 +123,73 @@
   \end{center}
 \end{frame}
 
-  \begin{frame}{A simple world}
-    I want struct, array and many functions...
-  \end{frame}
+\begin{frame}{A simple world}
+  I want struct, array and many functions...
+\end{frame}
 
-  \begin{frame}{A simple world}
+\begin{frame}{A simple world}
   Now some real feed...
-    \begin{example}
-      .section .data\\
-    data\_items:
+  \begin{example}
+    .section .data\\
+    data\_items:\\
     .long 3,67,34,222,45,75,54,34,44,33,22,11,66,0\\
-    .section .text
-    \end{example}
-  \end{frame}
+    .section .text\\
+    .global \_start\\
+    \_start:\\
+    movl \$0, \$edi\\
+    movl data\_items(,\%edi, 4), \%eax\\
+    movl \%eax, \%ebx\\
 
-    \begin{frame}{A simple world}
-      Some caveat
-  \end{frame}
+    start\_loop:\\
+    cmpl \$0, \$eax\\
+  \end{example}
+\end{frame}
+
+\begin{frame}{A simple world}
+  \begin{example}
+    je loop\_exit\\
+    incl \%edi\\
+    movl data\_items(,\$edi, 4), \%eax\\
+    cmpl \%ebx, \%eax\\
+    jle start\_loop\\
+    movl \%eax, \%ebx\\
+    jmp start\_loop\\
+    loop\_exit:\\
+    movl \$1, \%eax\\
+    int \$0x80\\
+  \end{example}
+  \begin{enumerate}
+    \pause
+  \item Why cmpl \$0, \$eax? \pause \color{red}{the last item of data\_items}
+    \pause
+  \item \color{black}{How to check result?} \pause \color{red}{echo \$?}
+    \pause
+  \item \color{black}{How to pass the result to next function?} \pause \color{red}{Euh...next section}
+  \end{enumerate}
+\end{frame}
+
+\begin{frame}{A simple world}
+  Some \color{red}{caveat}
+  \begin{enumerate}
+  \item SP is a freak!
+  \item You only have a limited number of registers.
+  \item Frame, frame, it's frame...
+  \item Alignment encounter with SP.
+  \item ......
+  \end{enumerate}
+  \begin{center}
+    \includegraphics[width = 0.2\textwidth, height=2.5cm]{grimace.jpg}
+  \end{center}
+  \begin{center}
+    \Large \emph{Simple but frustrated...}
+  \end{center}
+\end{frame}
+
+%abi
+\section{Agreements(ABI)}
+\begin{frame}{Agreements}
+  
+\end{frame}
 
 \section{Inline Assembly}
 \begin{frame}{Inline Assembly}
@@ -153,12 +203,6 @@
 
 \section{How many architectures}
 \begin{frame}{How many architectures}
-  
-\end{frame}
-
-% abi
-\section{Agreements(ABI}
-\begin{frame}{Agreements}
   
 \end{frame}
 
