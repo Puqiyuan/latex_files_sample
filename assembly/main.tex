@@ -83,6 +83,12 @@
   \end{example}
 \end{frame}
 
+\begin{frame}{Why assembly}
+  \begin{example}
+    \includegraphics[width = \textwidth, height=6.5cm]{context_switch.png}
+  \end{example}
+\end{frame}
+
 %high language how to map to assembly, instructions
 \section{A simple world}
 \begin{frame}{A simple world}
@@ -124,8 +130,50 @@
 \end{frame}
 
 \begin{frame}{A simple world}
-  I want struct, array and many functions...
+  I just, want struct, array and many functions...
+    \begin{center}
+    \includegraphics[width = 0.8\textwidth, height=4.5cm]{addressing.png}
+  \end{center}
+  Complete example:
+  \begin{center}
+    rax = rdx + 4 * rcx - 12\\
+   This is the so-called \color{red}{addressing mode}
+  \end{center}
 \end{frame}
+
+  \begin{frame}{A simple world}
+    I just, want struct, array and many functions... So, our Starring!
+\begin{columns}[onlytextwidth]
+    \begin{column}{0.45\textwidth}
+          \begin{minipage}[c][0.56\textheight][c]{\linewidth} 
+          \includegraphics[width = 0.8\textwidth, height=4.5cm]{array.png}
+          \end{minipage}
+    \end{column}
+    \begin{column}{0.5\textwidth}
+      \begin{minipage}[c][0.55\textheight][c]{1\linewidth} 
+        \begin{block}{How calculation}
+          T A[R][C]\\
+          \&A[i][j] = x_A + L(C * i + j)\\
+          L: the\enspace size\enspace of\enspace element\enspace of\enspace D
+         \end{block}
+         \end{minipage}
+       \end{column}
+     \end{columns}
+     \includegraphics[width = 0.8\textwidth, height=1.5cm]{array_assembly.png}
+     \begin{center}
+         \\\Large  Really simple, right? ;-)
+     \end{center}
+   \end{frame}
+
+   \begin{frame}{A simple world}
+     Eventually, it's the mysterious of function call!
+     \begin{center}
+       \includegraphics[width = 0.8\textwidth, height=3.5cm]{function_tr.png}
+       \includegraphics[width = 0.8\textwidth, height=3.5cm]{function_call.png}
+     \end{center}
+   \end{frame}
+   
+   
 
 \begin{frame}{A simple world}
   Now some real feed...
@@ -187,8 +235,127 @@
 
 %abi
 \section{Agreements(ABI)}
-\begin{frame}{Agreements}
+\begin{frame}{Agreements(ABI)}
+  Why Application Binary Interface(ABI)?\\
+
+ \begin{alertblock}{Definition}
+In computer software, an application binary interface (ABI) is an interface between two binary program modules
+\end{alertblock}
+ABIs cover details such as:
+\begin{enumerate}
+\item a processor instruction set (with details like register file structure, stack
+  organization, memory access types, ...)
+\item the sizes, layouts, and alignments of basic data types that the processor can directly access
+\item the calling convention
+\item syscall and more\\
+  \begin{center}
+    \Large Something like TCP/IP?
+  \end{center}
   
+\end{enumerate}
+\end{frame}
+
+\begin{frame}{Agreements(ABI)}
+Our interest, the calling convention
+\begin{alertblock}{Definition}
+In computer science, a calling convention is an implementation-level (low-level) scheme
+for how subroutines receive parameters from their caller and how they return a result.
+\end{alertblock}
+\begin{center}
+  So, for X86-64, what the convention?
+  \begin{columns}[onlytextwidth]
+    \begin{column}{0.45\textwidth}
+          \begin{minipage}[c][0.56\textheight][c]{\linewidth} 
+          \includegraphics[width = 1\textwidth, height=3.5cm]{param.png}
+          \end{minipage}
+    \end{column}
+    \begin{column}{0.5\textwidth}
+      \begin{minipage}[c][0.55\textheight][c]{1\linewidth}
+        \begin{block}{Notes}
+        \item 1, rax is the result
+        \item 2, arguments on stack if more than six
+        \end{block}
+      \end{minipage}
+      
+       \end{column}
+     \end{columns}
+\end{center}
+
+\end{frame}
+
+\begin{frame}{Agreements(ABI)}
+  Some examples...
+  
+\begin{center}
+  \begin{columns}[onlytextwidth]
+    \begin{column}{0.45\textwidth}
+          \begin{minipage}[c][0.56\textheight][c]{\linewidth} 
+          \includegraphics[width = 1\textwidth, height=3.5cm]{proc_c.png}
+          \end{minipage}
+        \end{column}
+
+        \begin{column}{0.45\textwidth}
+          \begin{minipage}[c][0.56\textheight][c]{\linewidth} 
+          \includegraphics[width = 1\textwidth, height=3.5cm]{caller_c.png}
+          \end{minipage}
+    \end{column}
+  \end{columns}
+
+  \Large Imagine what the assembly code?
+
+  \begin{center}
+    \includegraphics[width = 0.1\textwidth, height=1cm]{think.png}
+  \end{center}
+\end{center}
+
+\end{frame}
+
+\begin{frame}{Agreements(ABI)}
+  \vspace{1.2cm}
+\begin{center}
+  \begin{columns}[onlytextwidth]
+    \begin{column}{0.45\textwidth}
+          \begin{minipage}[c][0.56\textheight][c]{\linewidth} 
+          \includegraphics[width = 1\textwidth, height=8cm]{proc_assembly.png}
+          \end{minipage}
+        \end{column}
+
+        \begin{column}{0.45\textwidth}
+          \begin{minipage}[c][0.56\textheight][c]{\linewidth} 
+          \includegraphics[width = 1\textwidth, height=8cm]{caller_assembly.png}
+          \end{minipage}
+    \end{column}
+  \end{columns}
+\end{center}
+
+\end{frame}
+
+\section{How many architectures}
+\begin{frame}{How many architectures}
+  So, each architecture corresponds to an ABI. How many architectures theres is?
+
+  \begin{center}
+    \color{red}{Well, Of course, I don't know ;-)}
+  \end{center}
+
+  But for common architecture:
+  \begin{enumerate}
+  \item arm32
+    \begin{enumerate}
+    \item arguments: r0-r3
+    \item results: the same as arguments
+    \end{enumerate}
+  \item X86
+    \begin{enumerate}
+    \item arguments: it depends. On the stack?
+    \item results: eax
+    \end{enumerate}
+  \item SW64(Yes, your old friend!)
+    \begin{enumerate}
+    \item arguments: r16-r21
+    \item results: r0 \& r1
+    \end{enumerate}
+  \end{enumerate}
 \end{frame}
 
 \section{Inline Assembly}
@@ -197,18 +364,55 @@
   \begin{alertblock}{Damn!}
     \_\_asm\_\_ ("swp \%0, \%0, [\%1]" : : "r"(val), "r"(addr));
   \end{alertblock}
-  This is inline assembly
-  
-\end{frame}
-
-\section{How many architectures}
-\begin{frame}{How many architectures}
+  This is inline assembly, a syntax that allows you to write assembly in C(or other high
+  level language?)
+  \begin{center}
+    \begin{example}
+       int a=10, b;\\
+        asm ("movl \%1, \%\%eax; \\
+              movl \%\%eax, \%0;"\\
+             :"=r"(b)        /* output */\\
+             :"r"(a)         /* input */\\
+             :"\%eax"         /* clobbered register */\\
+             );  
+    \end{example}
+  \end{center}
   
 \end{frame}
 
 \section{Reverse Engineering}
 \begin{frame}{Reverse Engineering}
-Some friends you need...  
+  Some friends you need...
+  \begin{enumerate}
+  \item man objdump
+  \item man readelf
+  \item man gdb
+  \item man gcc
+  \item ELF(a really big topic)
+  \item last but not least, Google
+        % TODO to explain switch case
+  \end{enumerate}
+\end{frame}
+
+\section{Reverse Engineering}
+\begin{frame}{Reverse Engineering}
+  Try the real game!
+  \vspace{1cm}
+\begin{center}
+  \begin{columns}[onlytextwidth]
+    \begin{column}{0.45\textwidth}
+          \begin{minipage}[c][0.56\textheight][c]{\linewidth} 
+          \includegraphics[width = 1\textwidth, height=6.5cm]{switch_assembly.png}
+          \end{minipage}
+        \end{column}
+
+        \begin{column}{0.45\textwidth}
+          \begin{minipage}[c][0.56\textheight][c]{\linewidth} 
+          \includegraphics[width = 1\textwidth, height=6.5cm]{switch_c.png}
+          \end{minipage}
+    \end{column}
+  \end{columns}
+\end{center}
 \end{frame}
 
 \section{Questions}
@@ -243,18 +447,36 @@ Some friends you need...
         \bibitem{Hartshorne1977}
           John R. Levine
         \newblock \emph{Linkers \& Loaders}.
-     %    \newblock 
+        % \newblock
 
+        \setbeamertemplate{bibliography item}[book]
+        \bibitem{Hartshorne1977}
+         Oracle
+        \newblock \emph{x86 Assembly Language Reference Manual}.
+        \newblock 2010
         
-\setbeamertemplate{bibliography item}[online]
-
+        \setbeamertemplate{bibliography item}[online]
+        
         \bibitem{HR2018}
           Sandeep.S
         \newblock \emph{GCC-Inline-Assembly-HOWTO}, 2003.
         \newblock \url{https://www.ibiblio.org/gferg/ldp/GCC-Inline-Assembly-HOWTO.html}
-   \end{thebibliography}
- \end{frame}
 
+        \setbeamertemplate{bibliography item}[online]
+      \bibitem{HR201}
+        Wikipedia
+        \newblock \emph{Application binary interface}, 2020.
+        
+        \newblock \url{https://en.wikipedia.org/wiki/Application_binary_interface}
+
+        \setbeamertemplate{bibliography item}[online]
+      \bibitem{HR201}
+        Wikipedia
+        \newblock \emph{Calling convention}, 2020.
+        \newblock \url{https://en.wikipedia.org/wiki/Calling_convention}
+      \end{thebibliography}
+    \end{frame}
+    
  \section{Thanks}
 
  \begin{frame}{Thanks}
